@@ -1,0 +1,48 @@
+= Monitoring MySQL with Prometheus
+
+== Running
+
+```
+docker-compose up
+```
+
+Data is not stored in volumes so performance may not be great but you can easily destory the environment by running
+
+```
+docker-compose down
+```
+
+== Access
+
+=== URLs
+
+|=======
+| Tool | URL | Username | Password
+
+| Grafana | http://localhost:3000 | admin | secret
+| Prometheus | http://localhost:9090 | |
+| MySQL Exporter | http://localhost:9104 | |
+| Adminer | http://localhost:8080 | root | secret
+|=======
+
+=== MySQL User
+
+|=======
+| Username | Password | Database
+
+| root | secret |
+| user | user | mydb
+|=======
+
+=== MySQL Command Line
+
+```
+docker-compose exec mysql mysql --password=secret
+docker-compose exec mysql mysql --user=user --password=user
+```
+
+== Load Generator
+
+```
+docker-compose exec mysql mysqlslap --password=secret --auto-generate-sql --concurrency=5 --iterations=20
+```

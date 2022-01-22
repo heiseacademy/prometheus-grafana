@@ -1,0 +1,21 @@
+version: "3"
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=12d'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../content/prometheus:/prometheus
+    ports:
+      - 9090:9090
+
+  backend:
+    build:
+      context: backend-sample
+      dockerfile: Dockerfile
+      args:
+        - VARIANT=backend-sample
+    ports:
+      - 3000:3000

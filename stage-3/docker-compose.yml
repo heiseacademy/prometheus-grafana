@@ -1,0 +1,25 @@
+version: "3"
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=12d'
+      - ./service-discovery.json:/etc/prometheus/service-discovery.json
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./service-discovery.json:/etc/prometheus/service-discovery.json
+      - ../content/prometheus:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 9090:9090
+
+  backend:
+    build:
+      context: backend-sample
+      dockerfile: Dockerfile
+      args:
+        - VARIANT=backend-sample
+    ports:
+      - 3000:3000

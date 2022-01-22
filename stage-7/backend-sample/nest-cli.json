@@ -1,0 +1,30 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/backend-sample/src",
+  "monorepo": true,
+  "root": "apps/backend-sample",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/backend-sample/tsconfig.app.json"
+  },
+  "projects": {
+    "backend-sample": {
+      "type": "application",
+      "root": "apps/backend-sample",
+      "entryFile": "main",
+      "sourceRoot": "apps/backend-sample/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/backend-sample/tsconfig.app.json"
+      }
+    },
+    "sun-exporter": {
+      "type": "application",
+      "root": "apps/sun-exporter",
+      "entryFile": "main",
+      "sourceRoot": "apps/sun-exporter/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sun-exporter/tsconfig.app.json"
+      }
+    }
+  }
+}

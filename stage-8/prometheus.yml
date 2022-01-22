@@ -1,0 +1,54 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "demo-rules.yml"
+
+scrape_configs:
+  - job_name: prometheus
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: adresse
+      - source_labels: [__param_target]
+        target_label: aaaaa
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+
+  - job_name: sample-backend
+    file_sd_configs:
+      - files: [ '/etc/prometheus/service-discovery.json' ]
+        refresh_interval: 15s
+
+  - job_name: sun-exporter
+    scrape_interval: 1m
+    static_configs:
+      - targets: [ 'sun-exporter:3000' ]
+
+  - job_name: blackbox-demo
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115  # This is your blackbox exporter.
+    static_configs:
+      - targets: ['google.com']
+
+  - job_name: local-node-exporter
+    static_configs:
+      - targets: [ 'host.docker.internal:9100' ]
+
+  - job_name: push-gateway
+    honor_labels: true
+    static_configs:
+      - targets: [push-gateway:9091]
+
+#  - job_name: sun-proxy
+#    proxy_url: http://pushprox-server:8080/
+#    static_configs:
+#      - targets: [sun-exporter:3000]

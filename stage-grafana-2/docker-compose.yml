@@ -1,0 +1,112 @@
+version: "3"
+services:
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ../content/grafana:/var/lib/grafana
+    ports:
+      - 3000:3000
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: secret
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=12d'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./service-discovery.json:/etc/prometheus/service-discovery.json
+      - ./demo-rules.yml:/etc/prometheus/demo-rules.yml
+      - ../content/prometheus:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 9090:9090
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+
+  alertmanager:
+    image: quay.io/prometheus/alertmanager
+    volumes:
+      - ./alertmanager.yml:/alertmanager.yml
+    ports:
+      - 9093:9093
+    command:
+      - '--config.file=/alertmanager.yml'
+      - '--web.external-url=http://0.0.0.0:9093/'
+
+  backend:
+    build:
+      context: backend-sample
+      dockerfile: Dockerfile
+      args:
+        - VARIANT=backend-sample
+    ports:
+      - 3002:3000
+
+  blackbox:
+    image: prom/blackbox-exporter:master
+    volumes:
+      - ./blackbox.yaml:/blackbox.yaml
+    command:
+      - '--config.file=/blackbox.yaml'
+    ports:
+      - 9115:9115
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/rootfs:ro,rslave
+    command:
+      - '--path.procfs'
+      - '/host/proc'
+      - '--path.sysfs'
+      - '/host/sys'
+      - '--path.rootfs'
+      - '/host/rootfs'
+      - '--collector.filesystem.ignored-mount-points'
+      - '"^/(sys|proc|dev|host|etc)($$|/)"'
+      - '--web.listen-address=0.0.0.0:9100'
+    network_mode: host
+
+  sun-exporter:
+    build:
+      context: backend-sample
+      dockerfile: Dockerfile
+      args:
+        - VARIANT=sun-exporter
+    ports:
+      - 3001:3000
+  #    hostname: sun-exporter
+  #    networks:
+  #      - isolated
+
+  push-gateway:
+    image: prom/pushgateway
+    ports:
+      - 9091:9091
+
+  pushprox-server:
+    image: prom/pushprox
+    ports:
+      - 8000:8080
+    networks:
+      - default
+      - isolated
+
+  pushprox-client:
+    image: prom/pushprox
+    entrypoint: [ "/app/pushprox-client", "--proxy-url=http://pushprox-server:8080" ]
+    network_mode: service:sun-exporter
+
+networks:
+  isolated:
+    driver: bridge

@@ -1,0 +1,20 @@
+groups:
+  - name: Demo
+    rules:
+    - alert: PolarLights
+      expr: solar_wind_mag_gsm_tesla{component="bz"} < -10e-9
+      for: 1h
+      annotations:
+        summary: "Watch for Polar Lights!"
+        description: "Possibility for Polar Lights Increases, if bz is smaller the -10nt for more than 1 hour."
+
+    # Alert for any instance that is unreachable for >1 minutes.
+    - alert: InstanceDown
+      expr: up == 0
+      for: 1m
+      labels:
+        severity: error
+      annotations:
+        summary: "Instance {{ $labels.instance }} down"
+        description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."
+

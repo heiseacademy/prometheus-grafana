@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost/demo
+    username: user
+    password: user
+
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      #application: "${spring.application.name:unset}"
+      application: spring-app
+
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true #default
+
+    export:
+      prometheus:
+        pushgateway:
+          enabled: false
+          base-url: http://localhost:9091 #default
+          push-rate: 1m #default

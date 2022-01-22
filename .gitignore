@@ -1,0 +1,6 @@
+.idea
+data
+/content/prometheus/data/
+/content/grafana/*
+!/content/grafana/.gitkeep
+node_modules

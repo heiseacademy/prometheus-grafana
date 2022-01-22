@@ -1,0 +1,33 @@
+global:
+  smtp_smarthost: 'mailhog:1025'
+  smtp_from: 'alertmanager@training.org'
+  smtp_require_tls: false
+
+inhibit_rules:
+  - target_matchers:
+      - alertname = InstanceDown
+    source_matchers:
+      - alertname = InternetDown
+    equal: [stage]
+
+receivers:
+  - name: 'all-teams'
+    email_configs:
+      - to: 'everyone@training.de, monitoring-hero@training.de'
+        send_resolved: true
+  - name: 'science-team'
+    email_configs:
+      - to: 'science@training.de'
+        send_resolved: true
+
+route:
+  receiver: 'all-teams'
+  group_wait: 15s # Default: 30s
+  group_interval: 1m # Default: 5m
+
+  group_by: [ 'alertname', 'cluster' ]
+  routes:
+    - receiver: 'science-team'
+      repeat_interval: 2m # Default: 4h
+      matchers:
+        - alertname = PolarLights

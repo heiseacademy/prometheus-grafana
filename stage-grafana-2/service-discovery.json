@@ -1,0 +1,10 @@
+[
+  {
+    "targets": [
+      "backend:3000"
+    ],
+    "labels": {
+      "sd": "file"
+    }
+  }
+]
