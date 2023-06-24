@@ -3,7 +3,7 @@ FROM node:lts-slim as builder
 ARG VARIANT=backend-sample
 ARG PORT=3000
 
-RUN apt update && apt-get install -y --no-install-recommends build-essential python node-gyp dumb-init
+RUN apt update && apt-get install -y --no-install-recommends build-essential python3 node-gyp dumb-init
 
 #dependency layer
 COPY package*json ./
