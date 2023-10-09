@@ -10,8 +10,8 @@ kubectl version
 minikube start --driver docker --cpus 6 --memory 8192 --ports 80:80 \
    --extra-config=kubelet.authentication-token-webhook=true \
    --extra-config=kubelet.authorization-mode=Webhook  \
-   --extra-config=scheduler.address=0.0.0.0 \
-   --extra-config=controller-manager.address=0.0.0.0
+   --extra-config=scheduler.bind-address=0.0.0.0 \
+   --extra-config=controller-manager.bind-address=0.0.0.0
 
 # Kubernetes interne Metriken für Dashboard, falls kein Prometheus eingesetzt wird
 # minikube addons enable metrics-server
