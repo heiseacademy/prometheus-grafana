@@ -1,9 +1,12 @@
 FROM node:lts-slim as builder
+WORKDIR /app
 
 ARG VARIANT=backend-sample
 ARG PORT=3000
 
 RUN apt update && apt-get install -y --no-install-recommends build-essential python3 node-gyp dumb-init
+
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 #dependency layer
 COPY package*json ./
@@ -26,8 +29,8 @@ ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "/app/dist/main"]
 
 COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
-COPY --from=builder node_modules/ node_modules/
-COPY --from=builder dist/apps/${VARIANT}/* dist/
+COPY --from=builder app/node_modules/ node_modules/
+COPY --from=builder app/dist/apps/${VARIANT}/* dist/
 
 #this is quite slow..
 #RUN chown -R node /app
