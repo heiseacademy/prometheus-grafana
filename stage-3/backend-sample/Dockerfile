@@ -30,7 +30,7 @@ CMD ["node", "/app/dist/main"]
 
 COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
 COPY --from=builder app/node_modules/ node_modules/
-COPY --from=builder app/dist/apps/${VARIANT}/* dist/
+COPY --from=builder app/dist/* dist/
 
 #this is quite slow..
 #RUN chown -R node /app
